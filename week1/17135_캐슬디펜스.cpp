@@ -1,105 +1,136 @@
-#include<bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <algorithm>
 using namespace std;
 
+const int MAX = 15;
+
 int N, M, D;
-int arr[15][15];
-vector<pair<int, int>> enemy;
-void input() {
-    cin >> N >> M >> D;
-    for(int i = 0; i < N; i++) {
-        for(int j = 0; j < M; j++) {
-            cin >> arr[i][j];
-            if(arr[i][j] == 1) {
-                enemy.push_back({i, j});
-            }
-        }
-    }
-}
+int arr[MAX][MAX];
+int copyArr[MAX][MAX];
 
-void pro() {
-    int result = 0; // 최대 죽일 수 있는 적 저장
-    vector<int> archer;
-    for(int i = 0; i < 2; i++) archer.push_back(0);
-    for(int i = 2; i < M; i++) archer.push_back(1);
+int main(void)
+{
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cin >> N >> M >> D;
 
-    do {
-        int cnt = 0;
-        // cout << '\n' << "경우의 수" << '\n';
-        vector<pair<int,int>> copy = enemy;
-        vector<int> v;
-        for(int i = 0; i < archer.size(); i++) {
-            if(archer[i] == 1) {
-                v.push_back(i);
-            }
-        }
+	vector<pair<int, int>> enemy;
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < M; j++)
+		{
+			cin >> arr[i][j];
 
-        while(!copy.empty()) {
-            
-            vector<int> attack;
-            for(int i = 0; i < v.size(); i++) {
-                int x = v[i]; // 궁수 좌표
-                
-                // cout << "궁수 좌표 : " << v[i] << " 적 좌표 : " << copy[0].first << ' ' <<copy[0].second << '\n';
-                
-                int enemy_x = copy[0].second;
-                int dist = abs(N - copy[0].first) + abs(x - copy[0].second);
-                for(int j = 0; j < copy.size(); j++) {
-                    int len = abs(N - copy[j].first) + abs(x - copy[j].second);
-                    
-                    // 거리가 가까운 적 찾기
-                    if(dist > len) {
-                        dist = len;
-                        enemy_x = copy[j].second;
-                    }
+			if (arr[i][j] == 1)
+			{
+				// 적들의 좌표를 모두 넣어준다
+				enemy.push_back({ i, j });
+			}
+		}
+	}
 
-                    // 거리가 같은게 여러개면 가장 왼쪽
-                    else if(dist == len && enemy_x > copy[j].second) {
-                        enemy_x = copy[j].second;
-                    }
-                    // cout << "거리 : " << dist << '\n';
-                    // 거리가 가까운 거리가 여러명이면, 그 중 가장 왼쪽
-                }
-                if(dist <= D) {
-                    // 이러면 적을 죽일 수있다.
-                    attack.push_back(enemy_x);
-                }
+	/*
+		next_permutation을 이용할 것이기 때문에
+		00..0111 부터 시작
+	*/
+	vector<int> archer;
+	for (int i = 0; i < M - 3; i++)
+	{
+		archer.push_back(0);
+	}
 
-                    // 적과의 거리(dist)가 D이내에 잇다면 죽일 수있다.
+	for (int i = 0; i < 3; i++)
+	{
+		archer.push_back(1);
+	}
 
-                attack.erase(unique(attack.begin(), attack.end()), attack.end());
-                sort(attack.begin(), attack.end());
-                // for(auto i : attack) cout << i << ' ';
-                // cout << '\n';
+	int result = 0;
+	do
+	{
+		int cnt = 0;
+		// 적들의 좌표를 복사
+		vector<pair<int, int>> temp = enemy;
 
-                int shot = 0;
-                for(int i = 0; i < copy.size(); i++) {
-                    copy.erase(copy.begin() + (attack[i] - shot++));
-                    cnt++;
-                }
+		vector<int> v;
+		for (int i = 0; i < archer.size(); i++)
+		{
+			if (archer[i] == 1)
+			{
+				// 현재 궁수 위치 저장
+				v.push_back(i);
+			}
+		}
 
-                if(copy.empty()) {
-                    break;
-                }
+		while (!temp.empty())
+		{
+			vector<int> target;
 
-                // 적 내리기
-                vector<pair<int, int>> copy2;
-                for(int i = 0; i < copy.size(); i++) {
-                    if(copy[i].first < N - 1) {
-                        copy2.push_back({copy[i].first + 1, copy[i].second});
-                    }
-                }
-                copy = copy2;
-            }
-        }
-        result = max(result, cnt);
-    } while(next_permutation(archer.begin(), archer.end()));
-    cout << result;
-}
+			// 궁수는 동시에 공격
+			for (int i = 0; i < v.size(); i++)
+			{
+				int y = N; int x = v[i];
+				int idx = 0;
+				int enemyX = temp[0].second; // 적의 위치
+				int dist = abs(y - temp[0].first) + abs(x - temp[0].second);
+				for (int j = 1; j < temp.size(); j++)
+				{
+					int tempDist = abs(y - temp[j].first) + abs(x - temp[j].second);
+					
+					// 더 가까운 적
+					if (dist > tempDist)
+					{
+						enemyX = temp[j].second;
+						dist = tempDist;
+						idx = j;
+					}
+					// 거리가 같다면 더 왼쪽에 있는 적
+					else if (dist == tempDist && enemyX > temp[j].second)
+					{
+						enemyX = temp[j].second;
+						idx = j;
+					}
+				}
 
-int main() {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-    input();
-    pro();
-    return 0;
+				// D 이내에 있는 적만 처치 가능
+				if (dist <= D)
+				{
+					target.push_back(idx);
+				}
+			}
+
+			// 동시에 공격하기 때문에 중복된 적 있을 수 있다
+			target.erase(unique(target.begin(), target.end()), target.end());
+			sort(target.begin(), target.end());
+			int shoot = 0;
+			// 적을 처치
+			for (int i = 0; i < target.size(); i++)
+			{
+				temp.erase(temp.begin() + (target[i] - shoot++));
+				cnt++;
+			}
+
+			if (temp.empty())
+			{
+				break;
+			}
+
+			// 한칸 아래로
+			vector<pair<int, int>> copyTemp;
+			for (int i = 0; i < temp.size(); i++)
+			{
+				if (temp[i].first < N - 1)
+				{
+					copyTemp.push_back({ temp[i].first + 1, temp[i].second });
+				}
+			}
+
+			temp = copyTemp;
+		}
+
+		result = max(result, cnt);
+	} while (next_permutation(archer.begin(), archer.end()));
+
+	cout << result << "\n";
+	return 0;
 }

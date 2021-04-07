@@ -1,6 +1,7 @@
 /*
 Comment : 최소로 필요한 hp구하기에 이분탐색 느낌 물씬..
         : 최대로 가질 수 있는 hp 값이 무엇일까...
+        : long long의 최대값은 1e18 + 4로 설정하면 좋다고 한다.
 */
 #include<bits/stdc++.h>
 using namespace std;
@@ -33,7 +34,7 @@ bool isOk(int mid) {
 }
 
 void pro() {
-    int left = 1; int right = 1e6;
+    int left = 1; int right = 1e18 + 4;
     while(left <= right) {
         int mid = (left + right) / 2;
         if(isOk(mid)) {
@@ -48,6 +49,7 @@ void pro() {
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
+    cout << (1LL << 62);
     input();
     pro();
     return 0;

@@ -22,7 +22,7 @@ void input() {
 
 int go(int small_train, int idx) {
     
-    if(small_train > 3) return 0;
+    if(small_train >= 3) return 0;
     if(idx >= n) return 0;
 
     int &ret = dp[small_train][idx];

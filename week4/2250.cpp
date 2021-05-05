@@ -26,7 +26,9 @@ void input() {
         int x, y, z; cin >> x >> y >> z;
         tree[x][0] = y;
         tree[x][1] = z;
+        cout << y << ' ' << z << '\n';
         is_child[y] = 1, is_child[z] = 1;
+        cout << is_child[y] << ' ' << is_child[z] << '\n';
     }
 }
 

@@ -27,7 +27,10 @@ void pro() {
     for(int i = 0; i < r.size(); i += m) // 11 2
         answer += r[i] * 2;
     
-    abs(l[0]) > r[0] ? answer -= abs(l[0]) : answer -= r[0];
+    int l_value = 0; int r_value = 0;
+    l.empty() ? l_value = 0 : l_value = abs(l[0]);
+    r.empty() ? r_value = 0 : r_value = r[0];
+    answer -= max(l_value, r_value);
     cout << answer;
 }
 
